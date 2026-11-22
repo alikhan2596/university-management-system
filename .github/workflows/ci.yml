@@ -51,7 +51,7 @@ jobs:
             requirements.txt \
             templates \
             static \
-            script
+            scripts
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
