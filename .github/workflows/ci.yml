@@ -42,17 +42,15 @@ jobs:
       - name: Build Application Artifact
         run: |
           mkdir -p build
-
           zip -r build/ums-build-${{ github.sha }}.zip \
             app.py \
             feature_routes.py \
             schema.sql \
             requirements.txt \
             templates \
-            static \
-            -x "*.db" ".env" "__pycache__/*"
+            static
 
-      - name: Upload Build Artifact to GitHub Actions
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ums-build-${{ github.sha }}
