@@ -1,1 +1,78 @@
-{% extends 'base.html' %}{% block body %}<section class="login-shell"><div class="login-card"><img src="{{url_for('static',filename='images/logo.svg')}}" class="logo"><h1>University Management System</h1><p>Authorized users only</p><form method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><label>Username</label><input name="username" autocomplete="username" required><label>Password</label><div class="password"><input id="pw" type="password" name="password" autocomplete="current-password" required><button type="button" onclick="pw.type=pw.type==='password'?'text':'password'">Show</button></div><button class="primary">Sign in</button></form></div></section>{% endblock %}
+{% extends 'base.html' %}
+
+{% block body %}
+
+<section class="login-shell">
+
+    <div class="login-card">
+
+        <img
+            src="{{ url_for('static', filename='images/logo.svg') }}"
+            class="logo"
+            alt="University Management System Logo"
+        >
+
+        <h1>University Management System</h1>
+
+        <p>Authorized users only</p>
+        <p>Version 2.0</p>
+
+        <form method="post">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <label for="username">Username</label>
+
+            <input
+                id="username"
+                name="username"
+                type="text"
+                autocomplete="username"
+                required
+            >
+
+            <label for="pw">Password</label>
+
+            <div class="password">
+
+                <input
+                    id="pw"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    onclick="
+                        const passwordField = document.getElementById('pw');
+                        passwordField.type =
+                            passwordField.type === 'password'
+                                ? 'text'
+                                : 'password';
+                    "
+                >
+                    Show
+                </button>
+
+            </div>
+
+            <button
+                type="submit"
+                class="primary"
+            >
+                Sign in
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}
