@@ -32,3 +32,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+
+# Local security-fix files
+*_before_security_fix.py
+*_before_bandit_fix.py
+apply_security_fixes.py

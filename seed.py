@@ -26,14 +26,25 @@ conn = sqlite3.connect(DB)
 conn.execute('PRAGMA foreign_keys=ON')
 conn.executescript(SCHEMA.read_text(encoding='utf-8'))
 
-# Reset demo data safely in child-to-parent order.
-for table in [
-    'audit_logs', 'assessment_results', 'assessments',
-    'attendance_records', 'attendance_sessions', 'enrollments',
-    'schedules', 'offerings', 'students', 'sections', 'teachers',
-    'courses', 'rooms', 'users', 'semesters', 'departments'
-]:
-    conn.execute(f'DELETE FROM {table}')
+# Reset demo data safely in child-to-parent order using fixed SQL.
+conn.executescript("""
+DELETE FROM audit_logs;
+DELETE FROM assessment_results;
+DELETE FROM assessments;
+DELETE FROM attendance_records;
+DELETE FROM attendance_sessions;
+DELETE FROM enrollments;
+DELETE FROM schedules;
+DELETE FROM offerings;
+DELETE FROM students;
+DELETE FROM sections;
+DELETE FROM teachers;
+DELETE FROM courses;
+DELETE FROM rooms;
+DELETE FROM users;
+DELETE FROM semesters;
+DELETE FROM departments;
+""")
 
 # Departments
 for code, name in [
@@ -225,14 +236,25 @@ for offering_id in offering_ids:
 
 conn.commit()
 
-# Print verified row counts.
+# Print verified row counts using fixed SQL statements.
 print('Version 2 database seeded successfully.')
-for table in [
-    'users', 'students', 'teachers', 'courses', 'sections', 'rooms',
-    'offerings', 'schedules', 'enrollments', 'attendance_sessions',
-    'attendance_records', 'assessments', 'assessment_results'
-]:
-    count = conn.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]
-    print(f'{table}: {count}')
+count_queries = {
+    'users': 'SELECT COUNT(*) FROM users',
+    'students': 'SELECT COUNT(*) FROM students',
+    'teachers': 'SELECT COUNT(*) FROM teachers',
+    'courses': 'SELECT COUNT(*) FROM courses',
+    'sections': 'SELECT COUNT(*) FROM sections',
+    'rooms': 'SELECT COUNT(*) FROM rooms',
+    'offerings': 'SELECT COUNT(*) FROM offerings',
+    'schedules': 'SELECT COUNT(*) FROM schedules',
+    'enrollments': 'SELECT COUNT(*) FROM enrollments',
+    'attendance_sessions': 'SELECT COUNT(*) FROM attendance_sessions',
+    'attendance_records': 'SELECT COUNT(*) FROM attendance_records',
+    'assessments': 'SELECT COUNT(*) FROM assessments',
+    'assessment_results': 'SELECT COUNT(*) FROM assessment_results',
+}
+for table_name, query in count_queries.items():
+    count = conn.execute(query).fetchone()[0]
+    print(f'{table_name}: {count}')
 print('All seeded users must change their temporary password at first login.')
 conn.close()

@@ -241,11 +241,22 @@ def dashboard():
     data = {}
 
     if role == "admin":
-        # KPI counts remain integers. Do not overwrite these keys with row lists.
-        for table in ["students", "teachers", "courses", "offerings", "rooms"]:
-            data[table] = connection.execute(
-                f"SELECT COUNT(*) FROM {table}"
-            ).fetchone()[0]
+        # Static SQL avoids dynamic table identifiers and keeps KPI values numeric.
+        data["students"] = connection.execute(
+            "SELECT COUNT(*) FROM students"
+        ).fetchone()[0]
+        data["teachers"] = connection.execute(
+            "SELECT COUNT(*) FROM teachers"
+        ).fetchone()[0]
+        data["courses"] = connection.execute(
+            "SELECT COUNT(*) FROM courses"
+        ).fetchone()[0]
+        data["offerings"] = connection.execute(
+            "SELECT COUNT(*) FROM offerings"
+        ).fetchone()[0]
+        data["rooms"] = connection.execute(
+            "SELECT COUNT(*) FROM rooms"
+        ).fetchone()[0]
 
         data["pass_rate"] = connection.execute(
             """
@@ -483,12 +494,25 @@ def dashboard():
 
 
 def register_admin_crud(name, table, fields):
+    # These identifiers are developer-controlled constants, never request data.
+    allowed_fields = {
+        "departments": {"code", "name"},
+        "semesters": {
+            "name", "academic_year", "start_date", "end_date", "status"
+        },
+        "rooms": {"room_no", "building", "capacity", "room_type"},
+    }
+    if table not in allowed_fields:
+        raise ValueError("Invalid database table")
+    if not fields or not set(fields).issubset(allowed_fields[table]):
+        raise ValueError("Invalid database fields")
+
     @app.route(f"/{name}", endpoint=name)
     @roles_required("admin")
     def listing():
         connection = get_db_connection()
         rows = connection.execute(
-            f"SELECT * FROM {table} ORDER BY id DESC"
+            f"SELECT * FROM {table} ORDER BY id DESC"  # nosec B608 - validated allowlist
         ).fetchall()
         connection.close()
         return render_template(
@@ -509,7 +533,7 @@ def register_admin_crud(name, table, fields):
 
             try:
                 cursor = connection.execute(
-                    f"INSERT INTO {table} ({','.join(fields)}) VALUES ({placeholders})",
+                    f"INSERT INTO {table} ({','.join(fields)}) VALUES ({placeholders})",  # nosec B608 - validated allowlist
                     values,
                 )
                 connection.commit()
@@ -800,4 +824,4 @@ def error_500(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
