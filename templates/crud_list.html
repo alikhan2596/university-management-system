@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block body %}<div class="page-head"><h1>{{title}}</h1><a class="primary" href="/{{name}}/add">Add record</a></div><section class="panel"><table><tr>{% for f in fields %}<th>{{f.replace('_',' ')|title}}</th>{% endfor %}</tr>{% for r in rows %}<tr>{% for f in fields %}<td>{{r[f]}}</td>{% endfor %}</tr>{% endfor %}</table></section>{% endblock %}

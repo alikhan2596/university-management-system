@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>{% block title %}University Management System{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}"></head>
+<body>
+{% if session.uid %}
+<header><a class="brand" href="/">UMS</a><nav><a href="/">Dashboard</a>
+{% if session.role=='admin' %}
+<a href="/admin/teachers">Teachers</a><a href="/admin/students">Students</a><a href="/admin/courses">Courses</a><a href="/admin/sections">Sections</a>
+<a href="/departments">Departments</a><a href="/semesters">Semesters</a><a href="/rooms">Rooms</a><a href="/offerings">Assignments</a><a href="/schedules">Timetable</a><a href="/audit">Audit</a>
+{% elif session.role=='teacher' %}
+<a href="/teacher/courses">My Courses</a><a href="/teacher/timetable">My Timetable</a>
+{% elif session.role=='student' %}
+<a href="/student/courses">My Courses</a><a href="/student/timetable">My Timetable</a><a href="/student/attendance">My Attendance</a><a href="/student/results">My Results</a>
+{% endif %}
+<a href="/change-password">Password</a><a href="/logout">Logout</a></nav><span>{{session.name}} · {{session.role|title}}</span></header>
+{% endif %}
+<main>{% with ms=get_flashed_messages(with_categories=true) %}{% for cat,m in ms %}<div class="alert {{cat}}">{{m}}</div>{% endfor %}{% endwith %}{% block body %}{% endblock %}</main>
+</body></html>
